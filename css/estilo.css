@@ -1,0 +1,28 @@
+*{
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+  box-sizing: border-box;
+}
+#field{
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: auto;
+  margin-top: 2em;
+}
+#snake{
+  background-color: #99ff99;
+}
+.tail{
+  background-color: #44aa44 !important;
+}
+.piece{
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #4f4f4f;
+  border-width: 2px;
+  border-color: #4f4f4f;
+  padding: 2px;
+}
