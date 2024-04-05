@@ -1,13 +1,13 @@
 let time = 500
 let timer = setInterval(loop, time);
 let direction = 39; //right
-let snake = $("#snake");
-let tail = [];
+let snake = [$("#snake")];
 let pieceOn = false;
 let piece = null;
 
 $("body").keyup(function (e) {
-  direction = e.which;
+  if(e.which >= 37 && e.which <=40)
+    direction = e.which;
 });
 
 function loop(){
@@ -21,37 +21,17 @@ function loop(){
 function goTo(){
   switch (direction) {
     case 37: //left
-      snake.animate({ left: "-=20px" });
+      snake[0].animate({ left: "-=20px" });
       break;
     case 38: // up
-      snake.animate({ top: "-=20px" });
+      snake[0].animate({ top: "-=20px" });
       break;
     case 39: // right
-      snake.animate({ left: "+=20px" });
+      snake[0].animate({ left: "+=20px" });
       break;
     case 40: // down
-      snake.animate({ top: "+=20px" });
+      snake[0].animate({ top: "+=20px" });
       break;
-  }
-}
-
-function gameOver(){
-  let left = getPosition(snake, "left");
-  let top = getPosition(snake, "top");
-  if(left < 0 || left > 180 || top < 0 || top > 180){
-    clearInterval(timer);
-    alert("Game Over");
-  }
-  else{
-    tail.forEach(function(piece, index, array){
-      if(index == array.length -1) return;
-      let pieceLeft = getPosition(piece, "left");
-      let pieceTop = getPosition(piece, "top");
-      if(left == pieceLeft && top == pieceTop){
-        clearInterval(timer);
-        alert("Game Over");
-      }
-    });
   }
 }
 
@@ -62,38 +42,63 @@ function createPiece(){
     piece = $("<div>");
     $(piece).addClass("piece");
     $(piece).css({left: left+"px", top: top+"px"});
-    $(snake).before(piece);
+    $(snake[0]).before(piece);
     pieceOn = true;
   }
 }
 
+function gameOver(){
+  let left = getPosition(snake[0], "left");
+  let top = getPosition(snake[0], "top");
+  if(left < 0 || left > 180 || top < 0 || top > 180){
+    clearInterval(timer);
+    alert("Game Over");
+  }
+  else{
+    snake.forEach(function(piece, index, array){
+      if(index > 0){
+        if(colision(snake[0], piece)){
+          clearInterval(timer);
+          alert("Game Over");
+        }
+      }
+    });
+  }
+}
+
 function getPiece(){
-  let snakeLeft = getPosition(snake, "left");
-  let snakeTop = getPosition(snake, "top");
-  let pieceLeft = getPosition(piece, "left");
-  let pieceTop = getPosition(piece, "top");
-  
-  if(snakeLeft == pieceLeft && snakeTop == pieceTop){
+  if(colision(snake[0], piece)){
     pieceOn = false;
     // $(piece).remove();
     $(piece).addClass("tail");
-    tail.push(piece);
+    snake.push(piece);
 
-    clearInterval(timer);
-    time -= 10
-    timer = setInterval(loop, time);
+    // clearInterval(timer);
+    // time -= 10
+    // timer = setInterval(loop, time);
   }
 }
 
 function refreshTail(){
-  tail.forEach(function(piece, index, array){
-    if(array.length > index+1){
-      $(piece).css({left: getPosition(array[index+1], "left")+"px", top: getPosition(array[index+1], "top")+"px"})
+  snake.forEach(function(piece, index, array){
+    if(index > 0){
+      if(array.length > index+1){
+        $(piece).css({left: getPosition(array[index+1], "left")+"px", top: getPosition(array[index+1], "top")+"px"})
+      }
+      else{
+        $(piece).css({left: getPosition(snake[0], "left")+"px", top: getPosition(snake[0], "top")+"px"})
+      }
     }
-    else{
-      $(piece).css({left: getPosition(snake, "left")+"px", top: getPosition(snake, "top")+"px"})
-    }
-  })
+  });
+}
+
+function colision(objA, objB){
+  let aLeft = getPosition(objA, "left");
+  let aTop = getPosition(objA, "top");
+  let bLeft = getPosition(objB, "left");
+  let bTop = getPosition(objB, "top");
+  
+  return (aLeft == bLeft && aTop == bTop)
 }
 
 function getPosition(obj, p){
